@@ -1,0 +1,1782 @@
+basePath: /api
+definitions:
+  domain.Box:
+    properties:
+      ctime:
+        type: integer
+      desc:
+        type: string
+      device_id:
+        type: string
+      dtime:
+        type: integer
+      group_id:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      metrics:
+        items:
+          $ref: '#/definitions/domain.BoxMetric'
+        type: array
+      mtime:
+        type: integer
+      name:
+        type: string
+      sort_order:
+        type: integer
+      type:
+        type: string
+      zone_id:
+        type: string
+    type: object
+  domain.BoxGroup:
+    properties:
+      cameras:
+        items:
+          type: string
+        type: array
+      center:
+        $ref: '#/definitions/domain.Location'
+      ctime:
+        type: integer
+      dtime:
+        type: integer
+      id:
+        type: string
+      mtime:
+        type: integer
+      name:
+        type: string
+      note:
+        $ref: '#/definitions/domain.NoteGroup'
+      sort_order:
+        type: integer
+      subdomain:
+        type: string
+      zone_id:
+        type: string
+      zoom:
+        description: 10-16
+        type: integer
+    type: object
+  domain.BoxMetric:
+    properties:
+      code:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      metric:
+        type: string
+      name:
+        type: string
+      warning1:
+        type: string
+      warning2:
+        type: string
+      warning3:
+        type: string
+    type: object
+  domain.CreateBoxParams:
+    properties:
+      desc:
+        type: string
+      device_id:
+        type: string
+      group_id:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      metrics:
+        items:
+          $ref: '#/definitions/domain.BoxMetric'
+        type: array
+      name:
+        type: string
+      type:
+        type: string
+      zone_id:
+        type: string
+    required:
+    - device_id
+    - group_id
+    - location
+    - metrics
+    - name
+    - zone_id
+    type: object
+  domain.CreateGroupParams:
+    properties:
+      cameras:
+        items:
+          type: string
+        type: array
+      center:
+        $ref: '#/definitions/domain.Location'
+      name:
+        type: string
+      subdomain:
+        type: string
+      zone_id:
+        type: string
+      zoom:
+        type: integer
+    required:
+    - name
+    - zone_id
+    type: object
+  domain.CreateMetricParams:
+    properties:
+      alias:
+        type: string
+      code:
+        type: string
+      name:
+        type: string
+      range:
+        items:
+          $ref: '#/definitions/domain.Range'
+        type: array
+      unit:
+        type: string
+    required:
+    - code
+    - name
+    - unit
+    type: object
+  domain.CreateSettingParams:
+    properties:
+      key:
+        type: string
+      value: {}
+    required:
+    - key
+    - value
+    type: object
+  domain.CreateUserParams:
+    properties:
+      full_name:
+        type: string
+      groups:
+        items:
+          type: string
+        type: array
+      phone:
+        type: string
+      role:
+        $ref: '#/definitions/domain.Role'
+      username:
+        type: string
+      zalo_id:
+        type: string
+    required:
+    - full_name
+    - role
+    - username
+    type: object
+  domain.CreateZoneParams:
+    properties:
+      center:
+        $ref: '#/definitions/domain.Location'
+      code:
+        type: string
+      detail: {}
+      name:
+        type: string
+    required:
+    - code
+    - name
+    type: object
+  domain.DailyReport:
+    properties:
+      avg:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+      count:
+        type: integer
+      date:
+        type: string
+      max:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+      min:
+        additionalProperties:
+          format: float64
+          type: number
+        type: object
+    type: object
+  domain.Location:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
+  domain.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  domain.Metric:
+    properties:
+      alias:
+        type: string
+      code:
+        type: string
+      ctime:
+        type: integer
+      dtime:
+        type: integer
+      id:
+        type: string
+      mtime:
+        type: integer
+      name:
+        type: string
+      range:
+        items:
+          $ref: '#/definitions/domain.Range'
+        type: array
+      unit:
+        type: string
+    type: object
+  domain.MissionGroup:
+    properties:
+      name:
+        type: string
+      parameter:
+        description: Thông số
+        type: string
+      unit:
+        description: Đơn vị
+        type: string
+    type: object
+  domain.NoteGroup:
+    properties:
+      area:
+        description: Hồ chứa
+        type: string
+      area_manage:
+        description: Diện tích phòng quản lý (m2)
+        type: string
+      area_rise_die:
+        description: Diện tích hồ ứng với MNC(Ha)
+        type: string
+      area_rise_hight:
+        description: Diện tích hồ ứng với MNDGC(Ha)
+        type: string
+      area_rise_normal:
+        description: Diện tích hồ ứng với MNDBT(Ha)
+        type: string
+      bottom_width_incident:
+        description: Bề rộng đáy kênh tràn(m)
+        type: string
+      capacity_rise_die:
+        description: Dung tích hồ ứng với MNC(10^6m3)
+        type: string
+      capacity_rise_hight:
+        description: Dung tích hồ ứng với MNDGC(10^6m3)
+        type: string
+      capacity_rise_normal:
+        description: Dung tích hồ ứng với MNDBT(10^6m3)
+        type: string
+      city:
+        description: Thành phố
+        type: string
+      elevation:
+        description: Cao trình đập
+        type: string
+      elevation_discharge_dam:
+        description: Cao trình đập(m)
+        type: string
+      elevation_drain:
+        description: Cao trình cấu cống(m)
+        type: string
+      elevation_incident:
+        description: Cao trình ngưỡng tràn(m)
+        type: string
+      format_discharge_dam:
+        description: Hình thức tràn
+        type: string
+      frequency_flood:
+        description: Tần suất lũ thiết kế(%)
+        type: string
+      frequency_flood_origin:
+        description: Tần suất lũ kiểm tra(%)
+        type: string
+      height:
+        description: Chiều cao đập lớn nhất(m)
+        type: string
+      level:
+        description: Cấp công trình
+        type: string
+      longs:
+        description: Chiều dài đập(m)
+        type: string
+      maximum_discharge_drain:
+        description: Lưu lượng xả max(m3/s);
+        type: string
+      mission:
+        description: Nhiệm vụ công trình
+        items:
+          $ref: '#/definitions/domain.MissionGroup'
+        type: array
+      opening_drain:
+        description: Khẩu diện cống(m)
+        type: string
+      quantity_manage:
+        description: Số phòng
+        type: string
+      region:
+        description: Cấp công trình
+        type: string
+      roof_coefficient_down:
+        description: Hệ số mái hạ lưu
+        type: string
+      roof_coefficient_incident:
+        description: Hệ số mái kênh tràn
+        type: string
+      roof_coefficient_up:
+        description: Hệ số mái thượng lưu
+        type: string
+      structural_discharge_dam:
+        description: Tràn xả lũ
+        type: string
+      structural_drain:
+        description: Cống lấy nước
+        type: string
+      structural_incident:
+        description: Tràn sự cố
+        type: string
+      structural_manage:
+        description: Nhà quản lý
+        type: string
+      structure:
+        description: Đập chính
+        type: string
+      water_column_discharge_dam:
+        description: Cột nước tràn thiết kế(m)
+        type: string
+      water_column_incident:
+        description: Cột nước tràn thiết kế(m)
+        type: string
+      water_rise_die:
+        description: Mực nước chết MNC
+        type: string
+      water_rise_hight:
+        description: Mực nước dâng gia cường MNDGC (P = 1,50%)
+        type: string
+      water_rise_normal:
+        description: Mực nước dâng bình thường MNDBT (m)
+        type: string
+      watering:
+        description: Tần suất tưới thiết kế %
+        type: string
+      width:
+        description: Bề rộng mặt đập(m)
+        type: string
+      width_discharge_dam:
+        description: Chiều rộng tràn nước(m)
+        type: string
+    type: object
+  domain.PaginatedResponse:
+    properties:
+      data: {}
+      meta:
+        $ref: '#/definitions/domain.PaginationMeta'
+    type: object
+  domain.PaginationMeta:
+    properties:
+      filter: {}
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  domain.Range:
+    properties:
+      code:
+        type: string
+      max:
+        type: number
+      min:
+        type: number
+    type: object
+  domain.Record:
+    additionalProperties: true
+    type: object
+  domain.Report:
+    properties:
+      count:
+        type: integer
+      info:
+        properties:
+          metric:
+            type: string
+          month:
+            type: integer
+          year:
+            type: integer
+        type: object
+      total:
+        type: number
+    type: object
+  domain.Role:
+    enum:
+    - admin
+    - monitor
+    type: string
+    x-enum-comments:
+      RoleMonitor: readonly
+    x-enum-descriptions:
+    - ""
+    - readonly
+    x-enum-varnames:
+    - RoleAdmin
+    - RoleMonitor
+  domain.Setting:
+    properties:
+      ctime:
+        type: integer
+      id:
+        type: string
+      key:
+        type: string
+      mtime:
+        type: integer
+      value: {}
+    type: object
+  domain.UpdateBoxParams:
+    properties:
+      desc:
+        type: string
+      device_id:
+        type: string
+      group_id:
+        type: string
+      location:
+        $ref: '#/definitions/domain.Location'
+      metrics:
+        items:
+          $ref: '#/definitions/domain.BoxMetric'
+        type: array
+      name:
+        type: string
+      sort_order:
+        type: integer
+      type:
+        type: string
+    type: object
+  domain.UpdateGroupParams:
+    properties:
+      cameras:
+        items:
+          type: string
+        type: array
+      center:
+        $ref: '#/definitions/domain.Location'
+      name:
+        type: string
+      sort_order:
+        type: integer
+      subdomain:
+        type: string
+      zoom:
+        type: integer
+    type: object
+  domain.UpdateMetricParams:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+      range:
+        items:
+          $ref: '#/definitions/domain.Range'
+        type: array
+      unit:
+        type: string
+    type: object
+  domain.UpdateSettingParams:
+    properties:
+      value: {}
+    required:
+    - value
+    type: object
+  domain.UpdateUserParams:
+    properties:
+      full_name:
+        type: string
+      groups:
+        items:
+          type: string
+        type: array
+      phone:
+        type: string
+      zalo_id:
+        type: string
+    type: object
+  domain.UpdateZoneParams:
+    properties:
+      center:
+        $ref: '#/definitions/domain.Location'
+      code:
+        type: string
+      detail: {}
+      name:
+        type: string
+    type: object
+  domain.User:
+    properties:
+      ctime:
+        type: integer
+      dtime:
+        type: integer
+      full_name:
+        type: string
+      groups:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      mtime:
+        type: integer
+      phone:
+        type: string
+      role:
+        $ref: '#/definitions/domain.Role'
+      username:
+        type: string
+      zalo_id:
+        type: string
+      zone_id:
+        type: string
+    type: object
+  domain.ViewBox:
+    properties:
+      boxs:
+        items:
+          $ref: '#/definitions/domain.Box'
+        type: array
+      cameras:
+        items:
+          type: string
+        type: array
+      center:
+        $ref: '#/definitions/domain.Location'
+      ctime:
+        type: integer
+      dtime:
+        type: integer
+      id:
+        type: string
+      mtime:
+        type: integer
+      name:
+        type: string
+      note:
+        $ref: '#/definitions/domain.NoteGroup'
+      sort_order:
+        type: integer
+      subdomain:
+        type: string
+      total:
+        type: integer
+      zone_id:
+        type: string
+      zoom:
+        description: 10-16
+        type: integer
+    type: object
+  domain.Zone:
+    properties:
+      center:
+        $ref: '#/definitions/domain.Location'
+      code:
+        type: string
+      ctime:
+        type: integer
+      detail: {}
+      id:
+        type: string
+      mtime:
+        type: integer
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    name: API Support
+  description: Hydraulic Monitoring System API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: TP-API Documentation
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: User login
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - auth
+  /auth/password:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: New Password
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Set user password
+      tags:
+      - auth
+  /auth/profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - BearerAuth: []
+      summary: Get current user info
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            refresh_token:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refresh access token
+      tags:
+      - auth
+  /boxes:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List all boxes
+      tags:
+      - boxes
+  /boxes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Box'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete box (soft delete)
+      tags:
+      - boxes
+    get:
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Box'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get box by ID
+      tags:
+      - boxes
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateBoxParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Box'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update box
+      tags:
+      - boxes
+  /boxes/{id}/records:
+    get:
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Min timestamp (seconds)
+        in: query
+        name: time_min
+        type: integer
+      - description: Max timestamp (seconds)
+        in: query
+        name: time_max
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List sensor records for a box
+      tags:
+      - boxes
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Record data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Record'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add a sensor record
+      tags:
+      - boxes
+  /boxes/{id}/reports:
+    get:
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Min timestamp (seconds)
+        in: query
+        name: time_min
+        type: integer
+      - description: Max timestamp (seconds)
+        in: query
+        name: time_max
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.DailyReport'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Generate daily report for a box
+      tags:
+      - boxes
+  /data/box/{box_id}/count:
+    get:
+      parameters:
+      - description: Box ID
+        in: path
+        name: box_id
+        required: true
+        type: string
+      - description: Min timestamp (seconds)
+        in: query
+        name: time_min
+        type: integer
+      - description: Max timestamp (seconds)
+        in: query
+        name: time_max
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Count sensor records for a box
+      tags:
+      - data
+  /groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.BoxGroup'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete box group (soft delete)
+      tags:
+      - groups
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ViewBox'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get box group by ID
+      tags:
+      - groups
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateGroupParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ViewBox'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update box group
+      tags:
+      - groups
+  /groups/{id}/boxes:
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List boxes
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Box data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateBoxParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Box'
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new box
+      tags:
+      - groups
+  /groups/{id}/records:
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Min timestamp (seconds)
+        in: query
+        name: time_min
+        type: integer
+      - description: Max timestamp (seconds)
+        in: query
+        name: time_max
+        type: integer
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List sensor records for all boxes in a group
+      tags:
+      - groups
+  /groups/{id}/records/latest:
+    get:
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List sensor records latest for all boxes in a group
+      tags:
+      - groups
+  /metrics:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List all metrics
+      tags:
+      - metrics
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Metric data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateMetricParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Metric'
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new metric
+      tags:
+      - metrics
+  /metrics/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Metric ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Metric'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete metric (soft delete)
+      tags:
+      - metrics
+    get:
+      parameters:
+      - description: Metric ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Metric'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get metric by ID
+      tags:
+      - metrics
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Metric ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateMetricParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Metric'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update metric
+      tags:
+      - metrics
+  /settings:
+    get:
+      parameters:
+      - description: Filter by key
+        in: query
+        name: key
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List all settings
+      tags:
+      - settings
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Setting data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateSettingParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Setting'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new setting
+      tags:
+      - settings
+  /settings/{id}:
+    delete:
+      parameters:
+      - description: Setting ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a setting
+      tags:
+      - settings
+    get:
+      parameters:
+      - description: Setting ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Setting'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get setting by ID
+      tags:
+      - settings
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Setting ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateSettingParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Setting'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update a setting
+      tags:
+      - settings
+  /users:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create user params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateUserParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - BearerAuth: []
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - BearerAuth: []
+      summary: Delete user (soft delete)
+      tags:
+      - users
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - BearerAuth: []
+      summary: Get user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update user params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateUserParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - users
+  /users/{id}/password:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New Password
+        in: body
+        name: request
+        required: true
+        schema:
+          properties:
+            password:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Set password for a user (admin only)
+      tags:
+      - users
+  /zones:
+    get:
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: List all zones
+      tags:
+      - zones
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateZoneParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Zone'
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new zone
+      tags:
+      - zones
+  /zones/{id}:
+    get:
+      parameters:
+      - description: Zone ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Zone'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get zone by ID
+      tags:
+      - zones
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateZoneParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Zone'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update zone
+      tags:
+      - zones
+  /zones/{id}/groups:
+    get:
+      parameters:
+      - description: Zone ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.ViewBox'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List box groups
+      tags:
+      - zones
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Zone ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Group data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateGroupParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.BoxGroup'
+      security:
+      - BearerAuth: []
+      summary: Create a new box group
+      tags:
+      - zones
+  /zones/reports:
+    get:
+      parameters:
+      - description: Group ID
+        in: query
+        name: group
+        required: true
+        type: string
+      - description: Comma-separated metrics list
+        in: query
+        name: metrics
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Report'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Generate report by metrics
+      tags:
+      - zones
+securityDefinitions:
+  BearerAuth:
+    description: 'Bearer token for JWT authentication (format: Bearer <token>)'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TP-API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #swagger-ui {
+            padding-top: 60px;
+        }
+
+        /* Login Panel Styles */
+        .login-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            border-bottom-left-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 600px;
+        }
+
+        .login-panel input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 180px;
+        }
+
+        .login-panel button {
+            padding: 8px 16px;
+            background: #fff;
+            color: #667eea;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .login-panel button:hover {
+            background: #f0f0f0;
+            transform: translateY(-1px);
+        }
+
+        .login-panel button:active {
+            transform: translateY(0);
+        }
+
+        .status-message {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .status-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .token-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        .clear-btn {
+            padding: 6px 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .clear-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Panel -->
+    <div class="login-panel">
+        <input type="text" id="loginUsername" placeholder="Username" autocomplete="username" value="admin">
+        <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+        <button onclick="quickLogin()">Login & Set Token</button>
+        <button class="clear-btn" onclick="clearToken()">Clear Token</button>
+        <div id="loginStatus"></div>
+        <div id="tokenInfo"></div>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        let swaggerUI;
+
+        window.onload = function() {
+            // Initialize Swagger UI
+            swaggerUI = SwaggerUIBundle({
+                url: '/docs/swagger.json',
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                persistAuthorization: true,
+                onComplete: function() {
+                    // Auto-load JWT token from localStorage
+                    const savedToken = localStorage.getItem('swagger_jwt_token');
+                    if (savedToken) {
+                        // Use authActions.authorize to set token
+                        const authPayload = {
+                            BearerAuth: {
+                                name: 'BearerAuth',
+                                schema: {
+                                    type: 'apiKey',
+                                    in: 'header',
+                                    name: 'Authorization',
+                                    description: 'Bearer token for JWT authentication'
+                                },
+                                value: savedToken
+                            }
+                        };
+                        swaggerUI.authActions.authorize(authPayload);
+                        updateLoginStatus('Token loaded from storage', 'success');
+                        showTokenInfo(savedToken);
+                    }
+                },
+                onAuthorize: function(data) {
+                    // Save tokens when manually authorized via Swagger UI
+                    if (data.BearerAuth) {
+                        localStorage.setItem('swagger_jwt_token', data.BearerAuth);
+                        showTokenInfo(data.BearerAuth);
+                    }
+                }
+            });
+
+            // Load saved username
+            const savedUsername = localStorage.getItem('swagger_login_username');
+            if (savedUsername) {
+                document.getElementById('loginUsername').value = savedUsername;
+            }
+        };
+
+        async function quickLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                updateLoginStatus('Please enter username and password', 'error');
+                return;
+            }
+
+            updateLoginStatus('Logging in...', 'success');
+
+            try {
+                // Call login API
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    updateLoginStatus(data.error || 'Login failed', 'error');
+                    return;
+                }
+
+                // Extract tokens from response
+                const accessToken = data.access_token;
+                const refreshToken = data.refresh_token;
+
+                if (!accessToken) {
+                    updateLoginStatus('No access token received from server', 'error');
+                    return;
+                }
+
+                // Format Bearer token for Authorization header
+                const bearerToken = accessToken.startsWith('Bearer ') ? accessToken : 'Bearer ' + accessToken;
+
+                // Set JWT token in Swagger UI using authActions
+                const authPayload = {
+                    BearerAuth: {
+                        name: 'BearerAuth',
+                        schema: {
+                            type: 'apiKey',
+                            in: 'header',
+                            name: 'Authorization',
+                            description: 'Bearer token for JWT authentication'
+                        },
+                        value: bearerToken
+                    }
+                };
+                swaggerUI.authActions.authorize(authPayload);
+                localStorage.setItem('swagger_jwt_token', bearerToken);
+
+                // Save refresh token
+                if (refreshToken) {
+                    localStorage.setItem('swagger_refresh_token', refreshToken);
+                }
+
+                // Save username for convenience
+                localStorage.setItem('swagger_login_username', username);
+
+                // Show success message
+                updateLoginStatus('Login successful! Tokens set automatically.', 'success');
+                showTokenInfo(bearerToken, data.user);
+
+                // Clear password field
+                document.getElementById('loginPassword').value = '';
+
+            } catch (error) {
+                console.error('Login error:', error);
+                updateLoginStatus('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        function updateLoginStatus(message, type) {
+            const statusDiv = document.getElementById('loginStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-message status-' + type;
+
+            // Auto-clear success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = '';
+                }, 5000);
+            }
+        }
+
+        function showTokenInfo(token, user) {
+            const tokenInfoDiv = document.getElementById('tokenInfo');
+
+            // Try to decode JWT to show expiration
+            try {
+                const parts = token.replace('Bearer ', '').split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1]));
+                    const exp = payload.exp;
+                    const userName = user ? user.full_name || user.username : (payload.name || payload.sub);
+
+                    if (exp) {
+                        const expiryDate = new Date(exp * 1000);
+                        tokenInfoDiv.textContent = `Logged in as: ${userName} | Expires: ${expiryDate.toLocaleString()}`;
+                    } else {
+                        tokenInfoDiv.textContent = `Logged in as: ${userName}`;
+                    }
+                } else {
+                    tokenInfoDiv.textContent = 'Token set successfully';
+                }
+            } catch (e) {
+                tokenInfoDiv.textContent = 'Token set successfully';
+            }
+
+            tokenInfoDiv.className = 'token-info';
+        }
+
+        function clearToken() {
+            localStorage.removeItem('swagger_jwt_token');
+            localStorage.removeItem('swagger_refresh_token');
+
+            // Clear authorization in Swagger UI using authActions.logout
+            swaggerUI.authActions.logout(['BearerAuth']);
+
+            document.getElementById('tokenInfo').textContent = '';
+            document.getElementById('tokenInfo').className = '';
+            updateLoginStatus('Tokens cleared', 'success');
+        }
+
+        // Allow login with Enter key
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.id === 'loginUsername' || activeElement.id === 'loginPassword') {
+                    quickLogin();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
