@@ -907,6 +907,34 @@ paths:
       summary: Add a sensor record
       tags:
       - boxes
+  /boxes/{id}/records/export:
+    get:
+      parameters:
+      - description: Box ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Min timestamp (seconds)
+        in: query
+        name: time_min
+        type: integer
+      - description: Max timestamp (seconds)
+        in: query
+        name: time_max
+        type: integer
+      produces:
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+      security:
+      - BearerAuth: []
+      summary: Export records to Excel for a box
+      tags:
+      - boxes
   /boxes/{id}/reports:
     get:
       parameters:

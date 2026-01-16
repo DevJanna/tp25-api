@@ -309,7 +309,7 @@ func (r *SensorRepository) ReportRecords(ctx context.Context, boxID string, quer
 			if record, ok := item.(bson.M); ok {
 				for key, value := range record {
 					// Skip non-metric fields
-					if key == "_id" || key == "t" || key == "c" || key == "date" {
+					if key == "_id" || key == "c" || key == "date" {
 						continue
 					}
 

@@ -1,13 +1,16 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"tp25-api/internal/domain"
 	"tp25-api/internal/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/xuri/excelize/v2"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -406,4 +409,104 @@ func (h *SensorHandler) ListRecordsLatestByGroup(c *gin.Context) {
 			TotalItems: result.Total,
 		},
 	})
+}
+
+// ExportRecords godoc
+// @Summary Export records to Excel for a box
+// @Tags boxes
+// @Security BearerAuth
+// @Produce application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+// @Param id path string true "Box ID"
+// @Param time_min query int false "Min timestamp (seconds)"
+// @Param time_max query int false "Max timestamp (seconds)"
+// @Success 200 {file} file
+// @Router /boxes/{id}/records/export [get]
+func (h *SensorHandler) ExportRecords(c *gin.Context) {
+	boxID := c.Param("id")
+	if boxID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id parameter is required"})
+		return
+	}
+
+	var query domain.QueryRecord
+	if timeMin := c.Query("time_min"); timeMin != "" {
+		if timeMax := c.Query("time_max"); timeMax != "" {
+			min, _ := strconv.ParseInt(timeMin, 10, 64)
+			max, _ := strconv.ParseInt(timeMax, 10, 64)
+			query.Time = []int64{min, max}
+		}
+	}
+
+	result, err := h.service.ListRecords(c.Request.Context(), boxID, &query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	f := excelize.NewFile()
+	sheet := "Records"
+	f.SetSheetName("Sheet1", sheet)
+
+	headers := []string{"STT", "Time"}
+	metricKeys := []string{}
+
+	if len(result.Records) > 0 {
+		for key := range result.Records[0] {
+			if key != "c" && key != "_id" && key != "id" && key != "box_id" && key != "n" {
+				metricKeys = append(metricKeys, key)
+				headers = append(headers, key)
+			}
+		}
+	}
+
+	for i, header := range headers {
+		cell, _ := excelize.CoordinatesToCellName(i+1, 1)
+		f.SetCellValue(sheet, cell, header)
+	}
+
+	style, _ := f.NewStyle(&excelize.Style{
+		Font:      &excelize.Font{Bold: true},
+		Alignment: &excelize.Alignment{Horizontal: "center"},
+	})
+	f.SetRowStyle(sheet, 1, 1, style)
+
+	// Set column widths
+	f.SetColWidth(sheet, "A", "A", 6)  // STT
+	f.SetColWidth(sheet, "B", "B", 20) // Time
+	if len(metricKeys) > 0 {
+		lastCol, _ := excelize.ColumnNumberToName(len(metricKeys) + 2)
+		f.SetColWidth(sheet, "C", lastCol, 12) // Metric columns
+	}
+
+	for rowIdx, record := range result.Records {
+		row := rowIdx + 2
+
+		// STT
+		cellSTT, _ := excelize.CoordinatesToCellName(1, row)
+		f.SetCellValue(sheet, cellSTT, rowIdx+1)
+
+		// Time - check if timestamp is in seconds or milliseconds
+		timestamp := record.GetTimestamp()
+		if timestamp > 1e12 {
+			timestamp = timestamp / 1000
+		}
+		timeStr := time.Unix(timestamp, 0).Format("2006-01-02 15:04:05")
+		cellTime, _ := excelize.CoordinatesToCellName(2, row)
+		f.SetCellValue(sheet, cellTime, timeStr)
+
+		for colIdx, key := range metricKeys {
+			cell, _ := excelize.CoordinatesToCellName(colIdx+3, row)
+			f.SetCellValue(sheet, cell, record.GetFloat(key))
+		}
+	}
+
+	filename := fmt.Sprintf("records_%s_%s.xlsx", boxID, time.Now().Format("20060102_150405"))
+
+	c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+
+	if err := f.Write(c.Writer); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 }

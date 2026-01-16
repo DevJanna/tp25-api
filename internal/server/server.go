@@ -105,6 +105,7 @@ func New(cfg *config.Config, db *database.MongoDB) *gin.Engine {
 			boxes.PUT("/:id", authMiddleware.RequireRole(domain.RoleAdmin), zoneHandler.UpdateBox)
 			boxes.DELETE("/:id", authMiddleware.RequireRole(domain.RoleAdmin), zoneHandler.DeleteBox)
 			boxes.GET("/:id/records", sensorHandler.ListRecords)
+			boxes.GET("/:id/records/export", sensorHandler.ExportRecords)
 			boxes.POST("/:id/records", sensorHandler.AddRecord)
 			boxes.GET("/:id/reports", sensorHandler.ReportRecords)
 		}

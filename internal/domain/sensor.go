@@ -63,19 +63,20 @@ type UpdateMetricParams struct {
 }
 
 // Record represents a sensor data record with dynamic metric fields
-// t: sensor metric timestamp in seconds
+// _id: timestamp in seconds
 // c: server create timestamp in milliseconds
 // Other fields are dynamic metric values (e.g., WAU, DR, V, Q, Q_of)
 type Record map[string]interface{}
 
-// GetTimestamp returns the sensor timestamp (t field) in seconds
+// GetTimestamp returns the sensor timestamp (_id field) in seconds
 func (r Record) GetTimestamp() int64 {
-	if t, ok := r["t"].(int64); ok {
-		return t
-	}
-	if t, ok := r["t"].(float64); ok {
+	if t, ok := r["_id"].(int32); ok {
 		return int64(t)
 	}
+	if t, ok := r["id"].(int32); ok {
+		return int64(t)
+	}
+
 	return 0
 }
 
@@ -83,9 +84,6 @@ func (r Record) GetTimestamp() int64 {
 func (r Record) GetCreateTime() int64 {
 	if c, ok := r["c"].(int64); ok {
 		return c
-	}
-	if c, ok := r["c"].(float64); ok {
-		return int64(c)
 	}
 	return 0
 }

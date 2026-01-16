@@ -459,6 +459,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/boxes/{id}/records/export": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ],
+                "tags": [
+                    "boxes"
+                ],
+                "summary": "Export records to Excel for a box",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Box ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Min timestamp (seconds)",
+                        "name": "time_min",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Max timestamp (seconds)",
+                        "name": "time_max",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
         "/boxes/{id}/reports": {
             "get": {
                 "security": [
